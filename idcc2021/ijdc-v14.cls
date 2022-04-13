@@ -35,7 +35,7 @@
 
 \def\dccp@publ@long{International Journal of Digital Curation}
 \def\dccp@publ@short{IJDC}
-\def\dccp@publ@conf{This paper was presented at \dccp@publ@long IDCC21, Edinburgh, 19 April 2021}
+\def\dccp@publ@conf{This paper was presented at \dccp@publ@long \space IDCC21, Edinburgh, 19 April 2021}
 \def\dccp@publ@msg{The \emph{\dccp@publ@long} is an international journal committed to scholarly excellence and dedicated to the advancement of digital curation across a wide range of sectors. The \dccp@publ@short\ is published by the University of Edinburgh on behalf of the Digital Curation Centre. ISSN: 1746-8256. URL: \url{http://www.ijdc.net/}}
 \def\dccp@titlefoot@bib{%
   \dccp@publ@long\\
