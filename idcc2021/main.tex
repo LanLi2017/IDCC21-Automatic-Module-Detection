@@ -41,7 +41,7 @@
 \author{Nikolaus Parulian}
 \affil{School of Information Sciences \\ University of Illinois, Urbana-Champaign}
 \author{Bertram Lud\"ascher}
-\affil{School of Information Sciences \\ University of Illinois, Urbana-Champaign}
+\affil{School of Information Sciences \\ National Center for Supercomputing Applications (NCSA) \\ University of Illinois, Urbana-Champaign}
 \correspondence{Lan Li and Bertram Lud\"ascher. Email: \email{\{lanl2,ludaesch\}@illinois.edu}}
 
 
@@ -55,6 +55,9 @@
 \newcommand{\co}[1]{\textsf{\small{#1}}}
 
 \newcommand{\mypara}[1]{\textbf{#1.}}
+
+% \received{27 January 2021}
+% \accepted{12 March 2021}
 
 \begin{document}
 
@@ -80,7 +83,7 @@
 
 \bigskip
 
-\textbf{Keywords:} Data Cleaning $\cdot$ Provenance $\cdot$ Workflow Analysis
+\textbf{Keywords:} Data Cleaning $\cdot$ Provenance $\cdot$ Transparency $\cdot$ Workflow Analysis
 \end{abstract}
 
 
@@ -104,9 +107,7 @@ Consider a user $U$ (a researcher or data curator) who wants to prepare a datase
 analysis as part of a scientific study. Upon inspection she quickly realizes that $D_0$ is not ``fit
 for purpose'' \cite{chapman2020developing}, i.e., its organization and data quality needs to be
 improved for the intended use cases. She then employs a data cleaning tool such as
-\openrefine~\cite{openrefine2020} to obtain a ``cleaner'' version that can be used for the
-subsequent analyses.
-
+\openrefine~\cite{openrefine2020} to obtain a ``cleaner'' version that can be used for the subsequent analyses.
 An important byproduct of $U$'s interactive data cleaning process is an \emph{operation history} $H$
 that can be used to describe her data cleaning workflow as a sequence of \emph{steps}
 $S_1,\dots, S_n$ that transform the given $D_0$ via intermediate snapshots  into a final version
@@ -184,7 +185,7 @@ highlight the different kinds of effects that workflow steps have on a dataset a
 schema: % . The classification is based on the effects that operations have on a dataset:
 many transformations operate on a {single} column, while others read or write {multiple} columns or
 rename columns; some operations are \emph{generic} (i.e., can be applied, in principle, on any
-dataset column, e.g., \co{toLower} or \co{toUpper }), while others are \emph{domain-specific}
+dataset column, e.g., \co{toLower} or \co{toUpper}), while others are \emph{domain-specific}
 and \emph{user-defined} (e.g., a custom mapping that fixes common misspellings over a controlled
 vocabulary of city names); yet other operations convert data types (e.g., from string to number),
 etc. We have prototypically implemented our approach as part of an ongoing project to develop
@@ -207,35 +208,36 @@ open-source companion tools for \openrefine \cite{orma2021}.
 \centering
 \fbox{\includegraphics[width=0.95\textwidth]{idcc2021/figures/fig1-OR-history-export-crop.pdf}}
 \caption{\textbf{\openrefine History and Recipe.} The {undo/redo} history $H$
-(\emph{left}) shows the steps previously executed.  After clicking ``\co{Extract}'', the user can select the operations to
+(\emph{left}) shows all steps previously executed.  After clicking ``\co{Extract}'', the user can select the operations to
  be exported via a checklist (\emph{middle}). The selected recipe operations $R\subseteq H$ then appear in the JSON panel
  (\emph{right}). Steps 1 (\co{column-split}) and 3 (\co{column-rename}) are highlighted in the history, the checklist, and the JSON recipe. 
- Example taken from a recipe for the \emph{menus dataset}, crowd-sourced
- by volunteers for the New York Public Library \cite {whatsonmenu}.}
+ Example taken from a recipe for the \emph{menus} dataset, crowd-sourced
+ by volunteers for the NYPL \cite {whatsonmenu}.}
 \label{fig:recipe}
 \end{figure}
 
 
 
 \openrefine\ is a popular open-source data cleaning tool that allows users to execute data
-transformations in a browser-based, spreadsheet-like UI \cite{openrefine2020}.  As shown in
+transformations in a browser-based, spreadsheet-like user interface \cite{openrefine2020}. 
+
+As shown in
 \Figref{fig:recipe}, the tool allows users to export an operation history $H$ as a recipe $R$ by
-selecting a set of operations $R\subseteq H$. The resulting recipe can be copied and later reused
-for other datasets. 
+selecting a set of operations $R\subseteq H$. The resulting recipe can be copied and reused later for other datasets. 
 
 % This process $D\stackrel{H}{\leadsto}D'$ generates an operation history $H$ from which the user can select a recipe $R$ for reuse.
 
-On the left of \Figref{fig:architecture-overview}, a typical data cleaning use case is depicted: the
+On the left of \Figref{fig:architecture-overview}, a typical data cleaning use case is depicted: The
 user employs \openrefine\ to clean a dataset $D_0$. The process $D_0\stackrel{H}{\leadsto}D_n$
 generates an operation history $H$ with $n$ steps $S_1,\dots, S_n$ from which the user can select a
 recipe $R\subseteq H$ (see \figref{fig:recipe}). This recipe can then be exported in an \openrefine-specific JSON format for
-later reuse. %  on another dataset. 
+ reuse on another dataset. 
 Since $R$ is not meant for ``human consumption'', it is rather opaque and hard to digest for users.
 
-A first step towards improving transparency is to create a \emph{workflow model} from $R$. We 
+A first step towards improving transparency is to create a \emph{workflow model} from a recipe $R$. We 
 previously developed \ortoyw\footnote{\ortoyw: an
   \textbf{O}pen\textbf{R}efine-\emph{to}-\textbf{Y}es\textbf{W}orkflow
-  mapping tool \cite{or2yw}.}, which automatically generates \yw annotations from $R$. The \yw tool
+  mapping tool \cite{or2yw}.}, which automatically generates \yw (YesWorkflow) annotations from recipes. The \yw tool
 uses these to create a workflow model that can be queried and visualized
 \cite{mcphillips2015yesworkflow}. \yw was originally developed to allow researchers a simple way to
 manually annotate their program scripts in order to reveal workflow steps and dataflow dependencies
@@ -321,18 +323,18 @@ depicted in \figref{fig:prov-model}.
 
 The final ingredient needed by \orma to analyze data cleaning recipes as workflows is information
 about {data transformations} (operations): for each data cleaning operation or function $F$, we need
-to know at least its \emph{signature} $F: \bar X \to \bar Y$, i.e., the column(s)
+to know at least its \emph{signature} $F{:}~ \bar X \to \bar Y$, i.e., the column(s)
 $\bar X = X_1,\dots,X_k$ that $F$ reads (or \emph{uses}) and the column(s) $\bar Y = Y_1,\dots, Y_m$
 that it writes (or \emph{generates}). In this way, by analyzing direct and indirect dependencies
 between operations of a workflow, we can create different workflow views, including a modular view
-which automatically detects independent subworkflows.
+which automatically detects \emph{independent} subworkflows.
 
 Consider two consecutive steps $S_i$ and $S_{i+1}$ in a workflow. A fundamental question is to
 determine whether $S_{i+1}$ depends on $S_i$ (so execution must be serial) or whether $S_{i+1}$ is
-in fact \emph{independent} of $S_i$ (which can be modeled using a  parallel branch in the workflow).
+in fact {independent} of $S_i$ (which can be modeled using a  parallel branch in the workflow).
 
-If the two steps are implemented by two operations $F_i: \bar X_i \to \bar Y_i$ and
-$F_{i+1}: \bar X_{i+1} \to \bar Y_{i+1}$, we can test whether
+If the two steps are implemented by  operations $F_i{:}\,\bar X_i \to \bar Y_i$ and
+$F_{i+1}{:}\,\bar X_{i+1} \to \bar Y_{i+1}$, we can test whether
 $\bar Y_i \cap \bar X_{i+1} = \emptyset$. If this is the case, then the input $\bar X_{i+1}$ of
 $S_{i+1}$ does not make use of any output $\bar Y_i$ of $S_i$, and we can say that $S_{i+1}$ is
 {independent} of $S_i$.  In this way, a data cleaning recipe can be modeled as a workflow graph
@@ -549,7 +551,7 @@ reordering columns (e.g., \co{physical\_description: move to column \#5}).
  
 The schema view in \Figref{fig:linear_view} also provides additional insights, e.g., it reveals that
 the data curator was ``jumping around'' between different columns when cleaning the original
-dataset: while the first operations (near the top and middle of the evolving schema) operate on the
+dataset: While the first operations (near the top and middle of the evolving schema) operate on the
 \co{date} column and its derivative columns, two subsequent changes are then executed on the
 \co{event} column (with an additional ``interruption'' by an operation on \co{dish\_count}). Only
 near the end of the workflow does attention return to the \co{repaired\_date} column that had been
@@ -577,24 +579,6 @@ created in earlier steps.
 
 \subsection{\orma Modular View}
 
-\Figref{fig:parallel_view} again shows a table view on the far left (for orientation and comparison)
-and an automatically created \textbf{modular view} in the center, right.  Upon close inspection of
-the schema view in \Figref{fig:linear_view}, one can already guess at least some elements of the
-subworkflow structure exposed by the modular view. As in the schema view, the modular view depicted
-in \Figref{fig:parallel_view} uses different colors to indicate the nature or type of the operations
-involved (e.g., generic, custom, type conversion). \orma automatically detects all independent
-subworkflows (\emph{modules} ) based on the column-level dependencies obtained from recipes and the
-function signatures of operations. The modular view shown in \Figref{fig:parallel_view} still
-contains the original sequence numbers of workflow steps, which helps in matching steps across
-alternative views of the same workflow. In particular, the coarser-grained linear table view could
-be constructed from the modular view (but not vice versa).  Modular subworkflows as the ones shown
-here can be used as reusable building blocks for composing larger data cleaning recipes from a
-library of independent modules. Different levels of transparency and ``verbosity'' can be chosen for
-the different views supported by \orma: e.g., detailed parameter values can be included in the
-views, along with other derived information (e.g., how many canonical names are part of a
-\co{mass-edit} and how many variant spellings are recognized for each canonical name). 
-We have omitted the display of these additional details in our figure here.
-
 \begin{figure}[t]
   \centering
 {\includegraphics[height=0.33\textheight]{idcc2021/figures/table_view-crop.pdf}}
@@ -615,6 +599,26 @@ We have omitted the display of these additional details in our figure here.
   % \emph{day}, respectively. A final merge step creates a new column \emph{repaired\_date}. 
     \label{fig:parallel_view}
 \end{figure}
+
+\Figref{fig:parallel_view} again shows a table view on the far left (for orientation and comparison)
+and an automatically created \textbf{modular view} in the center, right.  Upon close inspection of
+the schema view in \Figref{fig:linear_view}, one can already guess at least some elements of the
+subworkflow structure exposed by the modular view. As in the schema view, the modular view depicted
+in \Figref{fig:parallel_view} uses different colors to indicate the nature or type of the operations
+involved (e.g., generic, custom, type conversion). \orma automatically detects all independent
+subworkflows (\emph{modules}) based on the column-level dependencies obtained from recipes and the
+function signatures of operations. The modular view shown in \Figref{fig:parallel_view} still
+contains the original sequence numbers of workflow steps, which helps in matching steps across
+alternative views of the same workflow. In particular, the coarser-grained linear table view could
+be constructed from the modular view (but not vice versa).  Modular subworkflows as the ones shown
+here can be used as reusable building blocks for composing larger data cleaning recipes from a
+library of independent modules. Different levels of transparency and ``verbosity'' can be chosen for
+the different views supported by \orma: e.g., detailed parameter values can be included in the
+views, along with other derived information (e.g., how many canonical names are part of a
+\co{mass-edit} and how many variant spellings are recognized for each canonical name). 
+We have omitted the display of these additional details in our figure here.
+
+
 
 
 
